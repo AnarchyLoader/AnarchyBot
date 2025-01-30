@@ -31,7 +31,9 @@ async def close(ctx: discord.ApplicationContext):
         thread = bot.get_channel(ctx.channel_id)
 
         await thread.edit(name=f"{thread.name} (CLOSED)")
+
         await ctx.respond(f"Thread closed")
+        await thread.edit(locked=True)
         await thread.archive()
 
 
