@@ -30,7 +30,10 @@ async def close(ctx: discord.ApplicationContext):
         logger.debug(f"close command executed")
         thread = bot.get_channel(ctx.channel_id)
 
-        await thread.edit(name=f"{thread.name} (CLOSED)")
+        new_name = thread.name
+        if len(new_name) > 70:
+            new_name = new_name[:70]
+        await thread.edit(name=f"{new_name} (CLOSED)")
 
         await ctx.respond(f"Thread closed")
         await thread.edit(locked=True)
@@ -43,7 +46,10 @@ async def add(ctx: discord.ApplicationContext):
         logger.debug(f"added command executed")
         thread = bot.get_channel(ctx.channel_id)
 
-        await thread.edit(name=f"{thread.name} (ADDED)")
+        new_name = thread.name
+        if len(new_name) > 70:
+            new_name = new_name[:70]
+        await thread.edit(name=f"{new_name} (ADDED)")
         await thread.archive()
         await ctx.send(f"Thread marked as added")
 
@@ -88,14 +94,19 @@ async def remove(ctx: discord.ApplicationContext):
 @bot.listen()
 async def on_thread_create(thread: discord.Thread):
     message = await thread.fetch_message(thread.id)
-    
+
     if any(role.id == russian_role for role in thread.owner.roles):
         if any(not attach.filename.endswith(".dll") for attach in message.attachments):
-            await thread.send("Мы принимаем только файлы с расширением .dll\nАдминистратор будет уведомлен о вашем сообщении")
+            await thread.send(
+                "Мы принимаем только файлы с расширением .dll\nАдминистратор будет уведомлен о вашем сообщении"
+            )
             await thread.send(f"<@&{admin_roles[1]}>")
     else:
         if any(not attach.filename.endswith(".dll") for attach in message.attachments):
-            await thread.send("We only accept files with .dll extension\nAn admin will be notified about your message")
+            await thread.send(
+                "We only accept files with .dll extension\nAn admin will be notified about your message"
+            )
             await thread.send(f"<@&{admin_roles[1]}>")
+
 
 bot.run(os.getenv("TOKEN"))
