@@ -93,20 +93,20 @@ async def remove(ctx: discord.ApplicationContext):
 
 @bot.listen()
 async def on_thread_create(thread: discord.Thread):
-    message = await thread.fetch_message(thread.id)
+    if thread.parent_id == 1327295090456006697:
+        message = await thread.fetch_message(thread.id)
 
-    if any(role.id == russian_role for role in thread.owner.roles):
-        if any(not attach.filename.endswith(".dll") for attach in message.attachments):
-            await thread.send(
-                "Мы принимаем только файлы с расширением .dll\nАдминистратор будет уведомлен о вашем сообщении"
-            )
-            await thread.send(f"<@&{admin_roles[1]}>")
-    else:
-        if any(not attach.filename.endswith(".dll") for attach in message.attachments):
-            await thread.send(
-                "We only accept files with .dll extension\nAn admin will be notified about your message"
-            )
-            await thread.send(f"<@&{admin_roles[1]}>")
-
+        if any(role.id == russian_role for role in thread.owner.roles):
+            if any(not attach.filename.endswith(".dll") for attach in message.attachments):
+                await thread.send(
+                    "Мы принимаем только файлы с расширением .dll\nАдминистратор будет уведомлен о вашем сообщении"
+                )
+                await thread.send(f"<@&{admin_roles[1]}>")
+        else:
+            if any(not attach.filename.endswith(".dll") for attach in message.attachments):
+                await thread.send(
+                    "We only accept files with .dll extension\nAn admin will be notified about your message"
+                )
+                await thread.send(f"<@&{admin_roles[1]}>")
 
 bot.run(os.getenv("TOKEN"))
