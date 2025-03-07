@@ -154,4 +154,24 @@ async def autoname(ctx: discord.ApplicationContext):
         await ctx.respond(embed=embed)
 
 
+@bot.slash_command(name="lock", description="Lock and archive the thread")
+async def lock(ctx: discord.ApplicationContext):
+    if any(role.id in admin_roles for role in ctx.author.roles):
+        logger.debug(f"lock command executed")
+        thread = bot.get_channel(ctx.channel_id)
+
+        await thread.edit(locked=True)
+        try:
+            await thread.archive()
+        except Exception:
+            pass
+
+        embed = discord.Embed(
+            title="Thread Locked",
+            description="🔒 Thread locked and archived",
+            color=discord.Color.red(),
+        )
+        await ctx.respond(embed=embed)
+
+
 bot.run(os.getenv("TOKEN"))
