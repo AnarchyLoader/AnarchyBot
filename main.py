@@ -160,18 +160,22 @@ async def lock(ctx: discord.ApplicationContext):
         logger.debug(f"lock command executed")
         thread = bot.get_channel(ctx.channel_id)
 
-        await thread.edit(locked=True)
-        try:
-            await thread.archive()
-        except Exception:
-            pass
-
         embed = discord.Embed(
             title="Thread Locked",
             description="🔒 Thread locked and archived",
             color=discord.Color.red(),
         )
         await ctx.respond(embed=embed)
+
+        try:
+            await thread.archive()
+        except Exception:
+            pass
+
+        try:
+            await thread.edit(locked=True)
+        except Exception:
+            pass
 
 
 bot.run(os.getenv("TOKEN"))
