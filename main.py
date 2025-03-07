@@ -108,7 +108,9 @@ async def on_thread_create(thread: discord.Thread):
         message = await thread.fetch_message(thread.id)
 
         if any(role.id == russian_role for role in thread.owner.roles):
-            if any(not attach.filename.endswith(".dll") for attach in message.attachments):
+            if any(
+                not attach.filename.endswith(".dll") for attach in message.attachments
+            ):
                 embed = discord.Embed(
                     title="File Extension Requirement",
                     description="Мы принимаем только файлы с расширением .dll\nАдминистратор будет уведомлен о вашем сообщении",
@@ -117,7 +119,9 @@ async def on_thread_create(thread: discord.Thread):
                 await thread.send(embed=embed)
                 await thread.send(f"⚠️ <@&{admin_roles[1]}>")
         else:
-            if any(not attach.filename.endswith(".dll") for attach in message.attachments):
+            if any(
+                not attach.filename.endswith(".dll") for attach in message.attachments
+            ):
                 embed = discord.Embed(
                     title="File Extension Requirement",
                     description="We only accept files with .dll extension\nAn admin will be notified about your message",
@@ -125,5 +129,29 @@ async def on_thread_create(thread: discord.Thread):
                 )
                 await thread.send(embed=embed)
                 await thread.send(f"⚠️ <@&{admin_roles[1]}>")
+
+
+@bot.slash_command(name="autoname", description="Automatically name the thread")
+async def autoname(ctx: discord.ApplicationContext):
+    thread = bot.get_channel(ctx.channel_id)
+
+    message = await thread.fetch_message(thread.id)
+    if message.attachments:
+        filename = message.attachments[0].filename
+        await thread.edit(name=filename)
+        embed = discord.Embed(
+            title="Thread Name Updated",
+            description=f"✅ Thread name updated to {filename}",
+            color=discord.Color.green(),
+        )
+        await ctx.respond(embed=embed)
+    else:
+        embed = discord.Embed(
+            title="No Attachments",
+            description="❌ No attachments found",
+            color=discord.Color.red(),
+        )
+        await ctx.respond(embed=embed)
+
 
 bot.run(os.getenv("TOKEN"))
